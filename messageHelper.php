@@ -5,7 +5,7 @@
  * @author Denis Chenu <denis@sondages.pro>
  * @copyright 2017 Denis Chenu <http://www.sondages.pro>
  * @license AGPL v3
- * @version 0.0.1
+ * @version 0.0.2
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,12 +22,6 @@ use Yii;
 
 class messageHelper{
 
-
-
-  /**
-   * @var array $language language to be used in public
-   */
-  public $sLanguage;
   /**
    * @var the survey id
    */
@@ -73,13 +67,14 @@ class messageHelper{
   public function render($message)
   {
     // Set the language for templatereplace
-    SetSurveyLanguage($this->iSurveyId, $this->sLanguage);
     $lsVersion=App()->getConfig("versionnumber");
     $aVersion=explode(".",$lsVersion);
+    /* Needed when rendering : we don't send thissurvey */
     Yii::app()->setConfig('surveyID',$this->iSurveyId);
-    SetSurveyLanguage($this->iSurveyId, $this->sLanguage);
+    /* Unsure needed ? For EM ? */
+    SetSurveyLanguage($this->iSurveyId, Yii::app()->language);
     $reData=array(
-      's_lang'=>$this->sLanguage
+      's_lang'=>Yii::app()->language
     );
     $message=templatereplace($message,array(),$reData);
     if($aVersion[0]==2 && $aVersion[1]<=6)
@@ -94,14 +89,17 @@ class messageHelper{
 
   /**
    * render a public message for 2.06 and lesser
+   * @param string $message : content to be show
+   * @param string $template to use
+   * @return void
    */
   private function _renderMessage206($message,$template)
   {
     $templateDir=Template::getTemplatePath($template);
     $renderData['message']=$message;
     Yii::app()->controller->layout='bare';
-    $renderData['language']=$this->sLanguage;
-    if (getLanguageRTL($this->sLanguage))
+    $renderData['language']=Yii::app()->language;
+    if (getLanguageRTL(Yii::app()->language))
     {
       $renderData['dir'] = ' dir="rtl" ';
     }
@@ -116,6 +114,9 @@ class messageHelper{
   }
   /**
    * render a public message for 2.50 and up
+   * @param string $message : content to be show
+   * @param string $template to use
+   * @return void
    */
   private function _renderMessage250($message,$template)
   {
@@ -123,8 +124,8 @@ class messageHelper{
     $templateDir= $oTemplate->viewPath;
     $renderData['message']=$message;
     Yii::app()->controller->layout='bare';
-    $renderData['language']=$this->sLanguage;
-    if (getLanguageRTL($this->sLanguage))
+    $renderData['language']=Yii::app()->language;
+    if (getLanguageRTL(Yii::app()->language))
     {
       $renderData['dir'] = ' dir="rtl" ';
     }
