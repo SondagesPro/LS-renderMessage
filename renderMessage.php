@@ -26,6 +26,8 @@ class renderMessage extends PluginBase {
   public function init()
   {
     $this->subscribe('afterPluginLoad');
+    $this->subscribe('beforeCloseHtml');
+
   }
 
   /**
@@ -36,4 +38,12 @@ class renderMessage extends PluginBase {
     Yii::setPathOfAlias('renderMessage', dirname(__FILE__));
   }
 
+  /**
+   * Set the alias to get the file
+   */
+  public function beforeCloseHtml()
+  {
+    $renderFlasMessage = \renderMessage\flashMessageHelper::getInstance();
+    $renderFlasMessage->renderFlashMessage();
+  }
 }
