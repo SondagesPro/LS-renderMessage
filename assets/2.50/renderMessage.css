@@ -6,3 +6,10 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  */
+.rm-flash-container{
+  position:fixed;
+  top:2em;
+  right:2em;
+  width:20em;
+  z-index:100000;/* default template 2000 : wher we go after ? */
+}

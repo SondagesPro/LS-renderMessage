@@ -1,19 +1,7 @@
 <?php
-/**
- * Description
- *
- * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2015 Denis Chenu <http://www.sondages.pro>
- * @license GPL v3
- * @version 0.0.1
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+  App()->clientScript->registerCssFile($assetUrl.'/2.50/renderMessage.css');
+?><div class="rm-flash-container">
+  <?php foreach($messages as $message){
+    echo Yii::app()->controller->renderPartial("renderMessage.views.2_50.flashMessage",$message);
+  }?>
+</div>
