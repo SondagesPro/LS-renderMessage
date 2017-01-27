@@ -49,10 +49,10 @@ class messageHelper{
       $this->sTemplate=Yii::app()->getConfig('defaulttemplate');
     }
     /* Find actual language*/
-    $this->sLanguage=Yii::app()->request->getParam('lang');
-    if(!$this->sLanguage){
+    $this->sLanguage=Yii::app()->language;
+    if(!$this->sLanguage || Yii::app()->language=='en_US'){
       if($oSurvey){
-        $this->sLanguage=$oSUrvey->language;
+        $this->sLanguage=$oSurvey->language;
       } else {
         $this->sLanguage=Yii::app()->getConfig('defaultlang');
       }

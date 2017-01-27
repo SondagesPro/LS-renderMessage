@@ -33,12 +33,12 @@ _This function are not available for 2.61 and lesser version_
 See [Install and activate a plugin for LimeSurvey](http://extensions.sondages.pro/install-and-activate-a-plugin-for-limesurvey.html)
 
 ### Via GIT
-- Go to your LimeSurvey Directory (version up to 2.06 only)
-- Clone in plugins/findUserAgentInfo directory
+- Go to your LimeSurvey Directory
+- Clone in plugins/renderMessage directory
 
 ### Via ZIP dowload
-- Download <http://extensions.sondages.pro/IMG/auto/findUserAgentInfo.zip>
-- Extract : `unzip findUserAgentInfo.zip`
+- Download <http://extensions.sondages.pro/IMG/auto/renderMessage.zip>
+- Extract : `unzip renderMessage.zip`
 - Move the directory to plugins/ directory inside LimeSUrvey
 
 ## Home page & Copyright
