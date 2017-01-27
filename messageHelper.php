@@ -60,7 +60,7 @@ class messageHelper{
   }
   /**
    * render the error to be shown
-   * @param $setting : the setting to be used
+   * @param $message : message to be shown
    *
    * return @void
    */
