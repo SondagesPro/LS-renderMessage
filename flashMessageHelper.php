@@ -28,7 +28,7 @@ class flashMessageHelper{
    */
   private static $_instance = null;
   /**
-   * @var string[]
+   * @var array[]
    * @access private
    */
   private $messages = array();
@@ -60,36 +60,17 @@ class flashMessageHelper{
     $this->messages[]=array('message'=>$message,'type'=>$type);
   }
 
+  /**
+   * render the existing public message at this time
+   */
   public function renderFlashMessage(){
     if(empty($this->messages)){
       return;
     }
-    $lsApiVersion=App()->getConfig("versionnumber");
-    $apiVersion=explode(".",$lsApiVersion);
-    if($apiVersion[0]==2 && $apiVersion[1]<=6)
-    {
-      $this->_renderMessage206($this->messages);
-    }
-    else
-    {
-      $this->_renderMessage250($this->messages);
-    }
-  }
-  /**
-   * render a public message for 2.06 and lesser
-   */
-  private function _renderMessage206($messages)
-  {
-    tracevar("Work in progress");
-  }
-  /**
-   * render a public message for 2.50 and up
-   */
-  private function _renderMessage250($messages)
-  {
-      $renderData['messages']=$this->messages;
-      $renderData['assetUrl']=Yii::app()->assetManager->publish(Yii::getpathOfAlias("renderMessage.assets"));
-      $flasMessageHtml=Yii::app()->controller->renderPartial("renderMessage.views.2_50.flashContainer",$renderData);
+    $lsApiVersion=\renderMessage\messageHelper::rmLsApiVersion();
+    $renderData['messages']=$this->messages;
+    $renderData['assetUrl']=Yii::app()->assetManager->publish(Yii::getpathOfAlias("renderMessage.assets.{$lsApiVersion}"));
+    $flasMessageHtml=Yii::app()->controller->renderPartial("renderMessage.views.{$lsApiVersion}.flashContainer",$renderData);
   }
 
 }

@@ -23,11 +23,11 @@ use Yii;
 class messageHelper{
 
   /**
-   * @var the survey id
+   * @var int the survey id (0 if no survey)
    */
   public $iSurveyId;
   /**
-   * @var the templateName
+   * @var string the templateName
    */
   public $sTemplate;
   /**
@@ -35,11 +35,14 @@ class messageHelper{
    */
   public $useCompletedTemplate=true;
 
+  /**
+   * Contructor
+   */
   public function __construct() {
     /* Find actual survey id */
-    $this->iSurveyId=(int)Yii::app()->request->getParam('surveyid',Yii::app()->request->getParam('sid'));
+    $this->iSurveyId=(int) Yii::app()->getConfig('surveyID');
     if(!$this->iSurveyId){
-      $this->iSurveyId=(int) Yii::app()->getConfig('surveyID'); // 0 if not set
+      $this->iSurveyId=(int)Yii::app()->request->getParam('surveyid',Yii::app()->request->getParam('sid'));
     }
     /* Find actual template*/
     $oSurvey=\Survey::model()->findByPk($this->iSurveyId);
@@ -50,7 +53,7 @@ class messageHelper{
     }
     /* Find actual language*/
     $this->sLanguage=Yii::app()->language;
-    if(!$this->sLanguage || Yii::app()->language=='en_US'){
+    if(!$this->sLanguage || Yii::app()->language=='en_US'){// @todo : control if in available language (global or survey)
       if($oSurvey){
         $this->sLanguage=$oSurvey->language;
       } else {
@@ -60,15 +63,12 @@ class messageHelper{
   }
   /**
    * render the error to be shown
-   * @param $message : message to be shown
+   * @param string $message : message to be shown
    *
    * return @void
    */
   public function render($message)
   {
-    // Set the language for templatereplace
-    $lsVersion=App()->getConfig("versionnumber");
-    $aVersion=explode(".",$lsVersion);
     /* Needed when rendering : we don't send thissurvey */
     Yii::app()->setConfig('surveyID',$this->iSurveyId);
     /* Unsure needed ? For EM ? */
@@ -76,29 +76,22 @@ class messageHelper{
     $reData=array(
       's_lang'=>Yii::app()->language
     );
-    $message=templatereplace($message,array(),$reData);
-    if($aVersion[0]==2 && $aVersion[1]<=6)
-    {
-      $this->_renderMessage206($message,$this->sTemplate);
+    $renderData['message']=templatereplace($message,array(),$reData);
+    $lsApiVersion=self::rmLsApiVersion();
+    switch($lsApiVersion){
+      case '2_06':
+        $templateDir=Template::getTemplatePath($this->sTemplate);
+        Yii::app()->controller->layout='bare';
+        break;
+      case '2_50':
+      case '3_00':
+        $oTemplate = \Template::model()->getInstance($this->sTemplate);
+        $templateDir= $oTemplate->viewPath;
+        Yii::app()->controller->layout='bare';
+        break;
+      default:
+        return;
     }
-    else
-    {
-      $this->_renderMessage250($message,$this->sTemplate);
-    }
-  }
-
-  /**
-   * render a public message for 2.06 and lesser
-   * @param string $message : content to be show
-   * @param string $template to use
-   * @return void
-   */
-  private function _renderMessage206($message,$template)
-  {
-    $templateDir=Template::getTemplatePath($template);
-    $renderData['message']=$message;
-    Yii::app()->controller->layout='bare';
-    $renderData['language']=Yii::app()->language;
     if (getLanguageRTL(Yii::app()->language))
     {
       $renderData['dir'] = ' dir="rtl" ';
@@ -107,36 +100,29 @@ class messageHelper{
     {
       $renderData['dir'] = '';
     }
+    $renderData['language']=$this->sLanguage;
     $renderData['templateDir']=$templateDir;
     $renderData['useCompletedTemplate']=$this->useCompletedTemplate;
-    Yii::app()->controller->render("renderMessage.views.2_06.public",$renderData);
-    Yii::app()->end();
-  }
-  /**
-   * render a public message for 2.50 and up
-   * @param string $message : content to be show
-   * @param string $template to use
-   * @return void
-   */
-  private function _renderMessage250($message,$template)
-  {
-    $oTemplate = \Template::model()->getInstance($template);
-    $templateDir= $oTemplate->viewPath;
-    $renderData['message']=$message;
-    Yii::app()->controller->layout='bare';
-    $renderData['language']=Yii::app()->language;
-    if (getLanguageRTL(Yii::app()->language))
-    {
-      $renderData['dir'] = ' dir="rtl" ';
-    }
-    else
-    {
-      $renderData['dir'] = '';
-    }
-    $renderData['templateDir']=$templateDir;
-    $renderData['useCompletedTemplate']=$this->useCompletedTemplate;
-    Yii::app()->controller->render("renderMessage.views.2_50.public",$renderData);
+    Yii::app()->controller->render("renderMessage.views.{$lsApiVersion}.public",$renderData);
     Yii::app()->end();
   }
 
+  /**
+   * return ls api version needed for helper
+   * @return string (0.0|2.6|2.50|3.0)
+   **/
+  public static function rmLsApiVersion(){
+      $lsVersion=App()->getConfig("versionnumber");
+      $aVersion=explode(".",$lsVersion);
+      $aVersion=array_replace([0,0,0],$aVersion);
+      if($aVersion[0]==2 && $aVersion[1]<=6){
+        return "2_06";
+      }elseif($aVersion[0]==2){
+        return "2_50";
+      }elseif($aVersion[0]==3){
+        return "3_00";
+      }
+      Yii::log("Unknow API version : $lsVersion",'error','application.plugins.renderMessage');
+      return "0_0";
+  }
 }

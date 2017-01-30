@@ -22,7 +22,6 @@ class renderMessage extends PluginBase {
   static protected $description = 'An helper for other plugins : render any message to public using the good template.';
   static protected $name = 'renderMessage';
 
-
   public function init()
   {
     $this->subscribe('afterPluginLoad');
