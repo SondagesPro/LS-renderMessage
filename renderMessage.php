@@ -17,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-class renderMessage extends PluginBase {
+class renderMessage extends \ls\pluginmanager\PluginBase {
 
   static protected $description = 'An helper for other plugins : render any message to public using the good template.';
   static protected $name = 'renderMessage';
