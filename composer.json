@@ -1,0 +1,15 @@
+{
+    "name": "SondagesPro/renderMessage",
+    "description": "A plugin for other plugin, allowing to render a public page or send a warning to public user.",
+    "type": "limesurvey-plugin",
+    "homepage": "https://github.com/SondagesPro/renderMessage",
+    "license": "AGPL-3.0+",
+    "authors": [
+        {
+            "name": "Denis Chenu",
+            "email": "contact@sondages.pro"
+        }
+    ],
+    "minimum-stability": "alpha",
+    "require": {}
+}
