@@ -80,7 +80,7 @@ class messageHelper{
     $lsApiVersion=self::rmLsApiVersion();
     switch($lsApiVersion){
       case '2_06':
-        $templateDir=Template::getTemplatePath($this->sTemplate);
+        $templateDir=\Template::model()->getTemplatePath($this->sTemplate);
         Yii::app()->controller->layout='bare';
         break;
       case '2_50':

@@ -3,9 +3,9 @@
  * Plugin helper for limesurvey : quick render a message to public user
  *
  * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2017 Denis Chenu <http://www.sondages.pro>
+ * @copyright 2017-2018 Denis Chenu <http://www.sondages.pro>
  * @license AGPL v3
- * @version 0.0.2
+ * @version 0.1.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-class renderMessage extends \ls\pluginmanager\PluginBase {
+class renderMessage extends PluginBase {
 
   static protected $description = 'An helper for other plugins : render any message to public using the good template.';
   static protected $name = 'renderMessage';
@@ -26,7 +26,6 @@ class renderMessage extends \ls\pluginmanager\PluginBase {
   {
     $this->subscribe('afterPluginLoad');
     $this->subscribe('beforeCloseHtml');
-
   }
 
   /**
