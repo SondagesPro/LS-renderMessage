@@ -50,6 +50,7 @@ class messageHelper{
       $this->sTemplate=$oSurvey->template;
     } else {
       $this->sTemplate=Yii::app()->getConfig('defaulttemplate');
+      $this->iSurveyId = null;
     }
     /* Find actual language*/
     $this->sLanguage=Yii::app()->language;
@@ -67,7 +68,7 @@ class messageHelper{
    *
    * return @void
    */
-  public function render($message)
+  public function render($message,$title=null)
   {
     /* Needed when rendering : we don't send thissurvey */
     Yii::app()->setConfig('surveyID',$this->iSurveyId);
@@ -82,29 +83,74 @@ class messageHelper{
       case '2_06':
         $templateDir=\Template::model()->getTemplatePath($this->sTemplate);
         Yii::app()->controller->layout='bare';
+        if (getLanguageRTL(Yii::app()->language)) {
+          $renderData['dir'] = ' dir="rtl" ';
+        } else {
+          $renderData['dir'] = '';
+        }
+        $renderData['language']=$this->sLanguage;
+        $renderData['templateDir']=$templateDir;
+        $renderData['useCompletedTemplate']=$this->useCompletedTemplate;
+        Yii::app()->controller->render("renderMessage.views.2_06.public",$renderData);
+        Yii::app()->end();
         break;
       case '2_50':
-      case '3_00':
         $oTemplate = \Template::model()->getInstance($this->sTemplate);
         $templateDir= $oTemplate->viewPath;
         Yii::app()->controller->layout='bare';
+        if (getLanguageRTL(Yii::app()->language)) {
+          $renderData['dir'] = ' dir="rtl" ';
+        } else {
+          $renderData['dir'] = '';
+        }
+        $renderData['language']=$this->sLanguage;
+        $renderData['templateDir']=$templateDir;
+        $renderData['useCompletedTemplate']=$this->useCompletedTemplate;
+        Yii::app()->controller->render("renderMessage.views.2_50.public",$renderData);
+        Yii::app()->end();
         break;
+      case '3_00':
+        if(!$title) {
+          $title = Yii::app()->getConfig('sitename');
+        }
+        $oTemplate = \Template::model()->getInstance($this->sTemplate);
+        $aSurveyInfo = array(
+            'languagecode' => $this->sLanguage,
+            'dir' => getLanguageRTL(Yii::app()->language) ? 'rtl' : 'ltr',
+            'surveyls_title' => $title,
+            'adminemail' => Yii::app()->getConfig("siteadminemail"),
+            'adminname' => Yii::app()->getConfig("siteadminname"),
+        );
+        if($this->iSurveyId) {
+          $aSurveyInfo = getSurveyInfo($iSurveyId, App()->getLanguage());
+          $oSurvey=\Survey::model()->findByPk($this->iSurveyId);
+        } else {
+          $oSurvey = new \stdClass();
+        }
+        $oSurvey->active = "Y";
+        //~ $aSurveyInfo['surveyls_title'] = $title;
+        $aSurveyInfo['aCompleted']['showDefault'] =false;
+        $aSurveyInfo['aCompleted']['sEndText'] =$message;
+        $aSurveyInfo['aAssessments']['show'] =false;
+        $aSurveyInfo['aCompleted']['aPrintAnswers']['show'] =false;
+        $aSurveyInfo['aCompleted']['aPublicStatistics']['show'] =false;
+        $aSurveyInfo['aCompleted']['aPublicStatistics']['sSurveylsUrl'] =null;
+        $aSurveyInfo['include_content'] = 'submit';
+        $aSurveyInfo['active'] = 'Y';
+        $renderData = array_merge($renderData, array(
+          'oTemplate'         => $oTemplate,
+          'sSiteName'         => Yii::app()->getConfig('sitename'),
+          'sSiteAdminName'    => Yii::app()->getConfig("siteadminname"),
+          'sSiteAdminEmail'   => Yii::app()->getConfig("siteadminemail"),
+          'aSurveyInfo'       => $aSurveyInfo,
+          'oSurvey'       => $oSurvey,
+        ));
+        Yii::app()->controller->render("renderMessage.views.3_00.public",$renderData);
+        Yii::app()->end();
       default:
         return;
     }
-    if (getLanguageRTL(Yii::app()->language))
-    {
-      $renderData['dir'] = ' dir="rtl" ';
-    }
-    else
-    {
-      $renderData['dir'] = '';
-    }
-    $renderData['language']=$this->sLanguage;
-    $renderData['templateDir']=$templateDir;
-    $renderData['useCompletedTemplate']=$this->useCompletedTemplate;
-    Yii::app()->controller->render("renderMessage.views.{$lsApiVersion}.public",$renderData);
-    Yii::app()->end();
+
   }
 
   /**
