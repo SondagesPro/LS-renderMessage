@@ -24,6 +24,10 @@ class renderMessage extends PluginBase {
 
   public function init()
   {
+    if(intval(App()->getConfig('versionnumber')) >=3) {
+        $this->log("You must update renderMessage plugin.",'error');
+        return;
+    }
     $this->subscribe('afterPluginLoad');
     $this->subscribe('beforeCloseHtml');
   }
