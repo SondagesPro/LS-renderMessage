@@ -8,6 +8,8 @@ A plugin for other plugin, allowing to render a public page or send a warning to
 This plugin offer 2 functions for other plugin, after activation : render and flashMessage.
 Plugin are tested on LimeSurvey 2.62.0, and must work partially on lesser version.
 
+**This plugin is not compatible with LimeSurvey 3 and up version.**
+
 ### render
 - string $message : the html message t be shown to user, language and template are automatically set by actual situation.
 
@@ -35,10 +37,11 @@ See [Install and activate a plugin for LimeSurvey](http://extensions.sondages.pr
 ### Via GIT
 - Go to your LimeSurvey Directory
 - Clone in plugins/renderMessage directory
+- Checkout to LimeSurvey2 
 
 ### Via ZIP dowload
-- Download <http://extensions.sondages.pro/IMG/auto/renderMessage.zip>
-- Extract : `unzip renderMessage.zip`
+- Download <http://extensions.sondages.pro/IMG/auto/renderMessage_ls2.zip>
+- Extract : `unzip renderMessage_ls2.zip`
 - Move the directory to plugins/ directory inside LimeSUrvey
 
 ## Home page & Copyright
