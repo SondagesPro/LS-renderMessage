@@ -1,0 +1,7 @@
+{% if (count(renderMessage.messages) > 0) %}
+    <div id="renderMessage-flash-wrapper" class="renderMessage-flash-wrapper">
+    {% for message in renderMessage.messages  %}
+        {{ include('./subviews/messages/flash_message.twig') }}
+    {% endfor %}
+    </div>
+{% endif %}

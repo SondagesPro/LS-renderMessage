@@ -5,7 +5,7 @@
  * @author Denis Chenu <denis@sondages.pro>
  * @copyright 2017-2018 Denis Chenu <http://www.sondages.pro>
  * @license AGPL v3
- * @version 0.1.0
+ * @version 1.0.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,29 +19,56 @@
  */
 class renderMessage extends PluginBase {
 
-  static protected $description = 'An helper for other plugins : render any message to public using the good template.';
-  static protected $name = 'renderMessage';
+    static protected $description = 'An helper for other plugins : render any message to public using the good template.';
+    static protected $name = 'renderMessage';
 
-  public function init()
-  {
-    $this->subscribe('afterPluginLoad');
-    $this->subscribe('beforeCloseHtml');
-  }
+    public function init()
+    {
+        if(intval(App()->getConfig('versionnumber')) < 3) {
+            return;
+        }
+        $oPlugin = Plugin::model()->find("name = :name",array("name"=>get_class($this)));
+        if($oPlugin && $oPlugin->active) {
+          $this->_setConfig();
+        }
+        $this->subscribe('getPluginTwigPath');
+        $this->subscribe('beforeTwigRenderTemplate');
+    }
 
-  /**
-   * Set the alias to get the file
-   */
-  public function afterPluginLoad()
-  {
-    Yii::setPathOfAlias('renderMessage', dirname(__FILE__));
-  }
+    /**
+     * Add flash at end, currently done only via javascript …
+     */
+    public function beforeTwigRenderTemplate()
+    {
+        $iSurveyId = $this->getEvent()->get('surveyId');
+        /* Add flash message */
+        $flashMessageHelper = \renderMessage\flashMessageHelper::getInstance();
+        $flashMessageHelper->renderFlashMessage();
+    }
 
-  /**
-   * Set the alias to get the file
-   */
-  public function beforeCloseHtml()
-  {
-    $renderFlasMessage = \renderMessage\flashMessageHelper::getInstance();
-    $renderFlasMessage->renderFlashMessage();
-  }
+    /**
+     * Add some views for this and other plugin
+     */
+    public function getPluginTwigPath()
+    {
+        $viewPath = dirname(__FILE__)."/views";
+        $this->getEvent()->append('add', array($viewPath));
+    }
+    /**
+    * Set the alias to get the file and replace twig by own Class
+    */
+    public function _setConfig()
+    {
+        Yii::setPathOfAlias('renderMessage', dirname(__FILE__));
+        if(false && floatval(App()->getConfig('versionnumber')) > 4) { /* @see https://github.com/LimeSurvey/LimeSurvey/pull/1078 */
+            return;
+        }
+
+        $lsConfig = require(APPPATH . 'config/internal' . EXT);
+        $twigRenderer = $lsConfig['components']['twigRenderer'];
+        Yii::import('renderMessage.renderMessageETwigViewRenderer',true);
+        $twigRenderer['class'] = 'renderMessage.renderMessageETwigViewRenderer';
+        Yii::app()->setComponent('twigRenderer',$twigRenderer);
+    }
+
 }

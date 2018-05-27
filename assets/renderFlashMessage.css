@@ -1,0 +1,5 @@
+body > .renderMessage-flash-wrapper{
+    position:absolute;
+    top:1em;right:1em;
+    max-width:15em;
+}

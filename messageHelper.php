@@ -5,7 +5,7 @@
  * @author Denis Chenu <denis@sondages.pro>
  * @copyright 2017 Denis Chenu <http://www.sondages.pro>
  * @license AGPL v3
- * @version 0.0.2
+ * @version 1.0.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,157 +18,100 @@
  * GNU General Public License for more details.
  */
 namespace renderMessage;
+use Template;
+use Survey;
 use Yii;
 
 class messageHelper{
 
-  /**
-   * @var int the survey id (0 if no survey)
-   */
-  public $iSurveyId;
-  /**
-   * @var string the templateName
-   */
-  public $sTemplate;
-  /**
-   * @var boolean for version lesser than 3.0 : usage of completed.pstpl
-   */
-  public $useCompletedTemplate=true;
-
-  /**
-   * Contructor
-   */
-  public function __construct() {
-    /* Find actual survey id */
-    $this->iSurveyId=(int) Yii::app()->getConfig('surveyID');
-    if(!$this->iSurveyId){
-      $this->iSurveyId=(int)Yii::app()->request->getParam('surveyid',Yii::app()->request->getParam('sid'));
-    }
-    /* Find actual template*/
-    $oSurvey=\Survey::model()->findByPk($this->iSurveyId);
-    if($oSurvey){
-      $this->sTemplate=$oSurvey->template;
-    } else {
-      $this->sTemplate=Yii::app()->getConfig('defaulttemplate');
-      $this->iSurveyId = null;
-    }
-    /* Find actual language*/
-    $this->sLanguage=Yii::app()->language;
-    if(!$this->sLanguage || Yii::app()->language=='en_US'){// @todo : control if in available language (global or survey)
-      if($oSurvey){
-        $this->sLanguage=$oSurvey->language;
-      } else {
-        $this->sLanguage=Yii::app()->getConfig('defaultlang');
-      }
-    }
-  }
-  /**
-   * render the error to be shown
-   * @param string $message : message to be shown
-   *
-   * return @void
-   */
-  public function render($message,$title=null)
-  {
-    /* Needed when rendering : we don't send thissurvey */
-    Yii::app()->setConfig('surveyID',$this->iSurveyId);
-    /* Unsure needed ? For EM ? */
-    SetSurveyLanguage($this->iSurveyId, Yii::app()->language);
-    $reData=array(
-      's_lang'=>Yii::app()->language
-    );
-    $renderData['message']=templatereplace($message,array(),$reData);
-    $lsApiVersion=self::rmLsApiVersion();
-    switch($lsApiVersion){
-      case '2_06':
-        $templateDir=\Template::model()->getTemplatePath($this->sTemplate);
-        Yii::app()->controller->layout='bare';
-        if (getLanguageRTL(Yii::app()->language)) {
-          $renderData['dir'] = ' dir="rtl" ';
-        } else {
-          $renderData['dir'] = '';
+    /**
+    * render the error to be shown
+    * @param string $message : content twig file to be used
+    * @param string|null $layout to be used (must be in a views directory, final name start by layout_ (added here)
+    * @param string|null $content to be used (layout dependent : in /subviews/content/ for layout 'global', 
+    * @param array $aData to be merged from default data
+    * return @void
+    */
+    public function render($message,$layout='global',$content='content',$aData=array())
+    {
+        if(!$layout) {
+            $layout = 'global';
         }
-        $renderData['language']=$this->sLanguage;
-        $renderData['templateDir']=$templateDir;
-        $renderData['useCompletedTemplate']=$this->useCompletedTemplate;
-        Yii::app()->controller->render("renderMessage.views.2_06.public",$renderData);
-        Yii::app()->end();
-        break;
-      case '2_50':
-        $oTemplate = \Template::model()->getInstance($this->sTemplate);
-        $templateDir= $oTemplate->viewPath;
-        Yii::app()->controller->layout='bare';
-        if (getLanguageRTL(Yii::app()->language)) {
-          $renderData['dir'] = ' dir="rtl" ';
-        } else {
-          $renderData['dir'] = '';
+        Template::model()->getInstance(App()->getConfig('defaulttheme'), null);
+        /* Try to find current survey */
+        $iSurveyid=(int) Yii::app()->getConfig('surveyID');
+        if(!$iSurveyid){
+          $iSurveyid=(int)Yii::app()->request->getParam('surveyid',Yii::app()->request->getParam('sid'));
         }
-        $renderData['language']=$this->sLanguage;
-        $renderData['templateDir']=$templateDir;
-        $renderData['useCompletedTemplate']=$this->useCompletedTemplate;
-        Yii::app()->controller->render("renderMessage.views.2_50.public",$renderData);
-        Yii::app()->end();
-        break;
-      case '3_00':
-        if(!$title) {
-          $title = Yii::app()->getConfig('sitename');
+        /* language*/
+        $language = App()->getLanguage();
+        if($iSurveyid) {
+            $oSurvey = Survey::model()->findByPk($iSurveyid);
+            if(!$oSurvey) {
+                $iSurveyid = null;
+            }
+            if($oSurvey) {
+                if(!$language || !in_array($language,$oSurvey->getAllLanguages() ) ) {
+                    $language = $oSurvey->language;
+                    App()->setLanguage($language);
+                }
+                $renderData['aSurveyInfo'] = getSurveyInfo($iSurveyid,$language);
+                Template::model()->getInstance(null, $iSurveyid);
+            }
         }
-        $oTemplate = \Template::model()->getInstance($this->sTemplate);
-        $aSurveyInfo = array(
-            'languagecode' => $this->sLanguage,
-            'dir' => getLanguageRTL(Yii::app()->language) ? 'rtl' : 'ltr',
-            'surveyls_title' => $title,
-            'adminemail' => Yii::app()->getConfig("siteadminemail"),
-            'adminname' => Yii::app()->getConfig("siteadminname"),
+        if(!$iSurveyid) {
+            $renderData['aSurveyInfo'] = array(
+                'surveyls_title' => App()->getConfig('sitename'),
+            );
+            Template::model()->getInstance(App()->getConfig('defaulttheme'), null);
+        }
+        $renderData['aSurveyInfo']['active'] = 'Y'; // Didn't show the default warning
+        $renderData['aSurveyInfo']['options']['ajaxmode'] = "off"; // Try to disable ajax mode
+        $renderData['aSurveyInfo']['include_content'] = $content;
+        $renderData['renderMessage'] = array(
+            'content' => $message,
         );
-        if($this->iSurveyId) {
-          $aSurveyInfo = getSurveyInfo($iSurveyId, App()->getLanguage());
-          $oSurvey=\Survey::model()->findByPk($this->iSurveyId);
-        } else {
-          $oSurvey = new \stdClass();
-        }
-        $oSurvey->active = "Y";
-        //~ $aSurveyInfo['surveyls_title'] = $title;
-        $aSurveyInfo['aCompleted']['showDefault'] =false;
-        $aSurveyInfo['aCompleted']['sEndText'] =$message;
-        $aSurveyInfo['aAssessments']['show'] =false;
-        $aSurveyInfo['aCompleted']['aPrintAnswers']['show'] =false;
-        $aSurveyInfo['aCompleted']['aPublicStatistics']['show'] =false;
-        $aSurveyInfo['aCompleted']['aPublicStatistics']['sSurveylsUrl'] =null;
-        $aSurveyInfo['include_content'] = 'submit';
-        $aSurveyInfo['active'] = 'Y';
-        $renderData = array_merge($renderData, array(
-          'oTemplate'         => $oTemplate,
-          'sSiteName'         => Yii::app()->getConfig('sitename'),
-          'sSiteAdminName'    => Yii::app()->getConfig("siteadminname"),
-          'sSiteAdminEmail'   => Yii::app()->getConfig("siteadminemail"),
-          'aSurveyInfo'       => $aSurveyInfo,
-          'oSurvey'       => $oSurvey,
-        ));
-        Yii::app()->controller->render("renderMessage.views.3_00.public",$renderData);
+        $renderData = array_merge_recursive($renderData,$aData);
+        Yii::app()->twigRenderer->renderTemplateFromFile('layout_'.$layout.'.twig', $renderData, false);
         Yii::app()->end();
-      default:
-        return;
     }
 
-  }
+    /**
+     * Render a message inside an alert box
+     * @param string $message
+     * @param string $type
+     * @param string $class extra class
+     * @return void
+     */
+    public static function renderAlert($message,$type='info',$class='')
+    {
+        $renderMessage = new self;
+        $extraData = array(
+            'renderMessage' => array(
+                'alert'=> array(
+                    'content' => $message,
+                    'type' => $type,
+                    'extraclass' => $class,
+                ),
+            ),
+        );
+        $renderMessage->render($message,'global','alert',$extraData);
+    }
 
-  /**
-   * return ls api version needed for helper
-   * @return string (0.0|2.6|2.50|3.0)
-   **/
-  public static function rmLsApiVersion(){
-      $lsVersion=App()->getConfig("versionnumber");
-      $aVersion=explode(".",$lsVersion);
-      $aVersion=array_replace([0,0,0],$aVersion);
-      if($aVersion[0]==2 && $aVersion[1]<=6){
-        return "2_06";
-      }elseif($aVersion[0]==2){
-        return "2_50";
-      }elseif($aVersion[0]==3){
-        return "3_00";
-      }
-      Yii::log("Unknow API version : $lsVersion",'error','application.plugins.renderMessage');
-      return "0_0";
-  }
+    /**
+     * Add a flash message to be displayed
+     * @param string $message
+     * @param string $type
+     * @return void
+     */
+    public static function addFlashMessage($message,$type='info')
+    {
+        $controller = Yii::app()->getController()->getId();
+        if($controller=='admin') {
+            Yii::app()->setFlashMessage($message, $class);
+            return;
+        }
+        $renderFlashMessage = \renderMessage\flashMessageHelper::getInstance();
+        $renderFlashMessage->addFlashMessage($message,$type);
+    }
 }

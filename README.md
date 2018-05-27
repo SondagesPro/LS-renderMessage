@@ -6,15 +6,29 @@ A plugin for other plugin, allowing to render a public page or send a warning to
 ## Usage
 
 This plugin offer 2 functions for other plugin, after activation : render and flashMessage.
-Plugin are tested on LimeSurvey 2.62.0, and must work partially on lesser version.
+Plugin are tested on LimeSurvey 3.8, and must work partially on version up to 3.0.
+
+** This plugin is not compatible with LimeSurvey 2.73 and lesser version.**
 
 ### render
-- string $message : the html message t be shown to user, language and template are automatically set by actual situation.
+- string $message : message send to twig file
+- string|null $layout to be used (must be in a views directory, final name start by layout_ (added here)). By default to global
+- string|null $content to be used (layout dependent : in /subviews/content/ for layout 'global', default to included view content.twig) 
+- array $aData to be merged from default data
 
-To show a message to a public user and quit after.
+To show an alert message to a public user and quit after.
 ````
     $renderMessage = new \renderMessage\messageHelper();
     $renderMessage->render($message);
+````
+
+### renderAlert
+- string $message : the html message t be shown to user, language and template are automatically set by actual situation.
+- string $type : message type, using alert class of BootStrap then `success`,`info`,`warning`,`danger`. Default is `info`.
+
+To show an alert message to a public user and quit after.
+````
+    \renderMessage\messageHelper::renderAlert($message,$type);
 ````
 
 ### flashMessage
@@ -23,10 +37,21 @@ To show a message to a public user and quit after.
 
 To show one or flash message to a public user.
 ````
-    $renderFlashMessage = \renderMessage\flashMessageHelper::getInstance();
-    $renderFlashMessage->addFlashMessage($message);
+    \renderMessage\messageHelper::addFlashMessage($message,$type);
 ````
-_This function are not available for 2.61 and lesser version_
+_This function use javascript solution_
+
+### Adding or replace template twig file.
+
+This plugin add a new event : `getPluginTwigPath`, where you can add or replace twig files from template.
+
+Simple example to add a directory :
+````
+    $viewPath = dirname(__FILE__)."/views";
+    $this->getEvent()->append('add', array($viewPath));
+````
+
+This plugin already use this event to add and use `subviews/content/alert.twig`, `subviews/content/content.twig`, `subviews/messages/flash_messages.twig` and `subviews/messages/flash_message.twig`.
 
 ## Installation
 

@@ -5,7 +5,7 @@
  * @author Denis Chenu <denis@sondages.pro>
  * @copyright 2017 Denis Chenu <http://www.sondages.pro>
  * @license AGPL v3
- * @version 0.0.1
+ * @version 1.0.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
  */
 namespace renderMessage;
 use Yii;
+use CClientScript;
 
 class flashMessageHelper{
 
@@ -37,7 +38,7 @@ class flashMessageHelper{
   * @param void
   * @return void
   */
-  private function __construct() {
+  private function init() {
 
   }
   /* Init
@@ -54,10 +55,15 @@ class flashMessageHelper{
    * add a flash message to existing flash
    * @param string $message : message to be added
    * @param string $type : (default|success|warning|error)
+   * @param string $extraclass 
    * return @void
    */
-  public function addFlashMessage($message,$type='info'){
-    $this->messages[]=array('message'=>$message,'type'=>$type);
+  public function addFlashMessage($message,$type='info',$extraclass=''){
+    $this->messages[]=array(
+        'message'=>$message,
+        'type'=>$type,
+        'extraclass'=>$extraclass,
+    );
   }
 
   /**
@@ -65,12 +71,40 @@ class flashMessageHelper{
    */
   public function renderFlashMessage(){
     if(empty($this->messages)){
-      return;
+        return;
     }
-    $lsApiVersion=\renderMessage\messageHelper::rmLsApiVersion();
-    $renderData['messages']=$this->messages;
-    $renderData['assetUrl']=Yii::app()->assetManager->publish(Yii::getpathOfAlias("renderMessage.assets.{$lsApiVersion}"));
-    $flasMessageHtml=Yii::app()->controller->renderPartial("renderMessage.views.{$lsApiVersion}.flashContainer",$renderData);
+    $renderData= array(
+        'renderMessage'=> array(
+            'messages'=>$this->messages,
+        ),
+    );
+    $controller = Yii::app()->getController();
+    $htmlMessage = Yii::app()->twigRenderer->renderPartial('./subviews/messages/flash_messages', $renderData);
+    $renderMessageData = json_encode(['message'=>$htmlMessage]);
+    $this->_addAndRegisterPackage();
+    Yii::app()->getClientScript()->registerScript('renderMessageData',"renderFlasMessage = ".$renderMessageData,CClientScript::POS_END);
   }
 
+    /**
+     * Create package if not exist, register it
+     */
+    private function _addAndRegisterPackage()
+    {
+        /* Quit if is done */
+        if(array_key_exists('renderFlashMessage',Yii::app()->getClientScript()->packages)) {
+            return;
+        }
+        /* Add package if not exist (allow to use another one in config) */
+        if(!Yii::app()->clientScript->hasPackage('renderFlashMessage')) {
+            Yii::setPathOfAlias('renderFlashMessage',dirname(__FILE__));
+            Yii::app()->clientScript->addPackage('renderFlashMessage', array(
+                'basePath'    => 'renderMessage.assets',
+                'css'         => array('renderFlashMessage.css'),
+                'js'          => array('renderFlashMessage.js'),
+                'depends'      =>array('limesurvey-public','template-core'),
+            ));
+        }
+        /* Registering the package */
+        Yii::app()->getClientScript()->registerPackage('renderFlashMessage');
+    }
 }
