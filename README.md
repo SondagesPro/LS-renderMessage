@@ -8,7 +8,7 @@ A plugin for other plugin, allowing to render a public page or send a warning to
 This plugin offer 2 functions for other plugin, after activation : render and flashMessage.
 Plugin are tested on LimeSurvey 3.8, and must work partially on version up to 3.0.
 
-** This plugin is not compatible with LimeSurvey 2.73 and lesser version.**
+**This plugin is not compatible with LimeSurvey 2.73 and lesser version.**
 
 ### render
 - string $message : message send to twig file
