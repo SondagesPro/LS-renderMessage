@@ -16,10 +16,10 @@ Plugin are tested on LimeSurvey 3.8, and must work partially on version up to 3.
 - string|null $content to be used (layout dependent : in /subviews/content/ for layout 'global', default to included view content.twig) 
 - array $aData to be merged from default data
 
-To show an alert message to a public user and quit after.
+To show any content to a public user with default layout and quit after.
 ````
     $renderMessage = new \renderMessage\messageHelper();
-    $renderMessage->render($message);
+    $renderMessage->render($content);
 ````
 
 ### renderAlert
