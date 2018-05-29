@@ -8,7 +8,7 @@ A plugin for other plugin, allowing to render a public page or send a warning to
 This plugin offer 2 functions for other plugin, after activation : render and flashMessage.
 Plugin are tested on LimeSurvey 3.8, and must work partially on version up to 3.0.
 
-** This plugin is not compatible with LimeSurvey 2.73 and lesser version.**
+**This plugin is not compatible with LimeSurvey 2.73 and lesser version.**
 
 ### render
 - string $message : message send to twig file
@@ -16,10 +16,10 @@ Plugin are tested on LimeSurvey 3.8, and must work partially on version up to 3.
 - string|null $content to be used (layout dependent : in /subviews/content/ for layout 'global', default to included view content.twig) 
 - array $aData to be merged from default data
 
-To show an alert message to a public user and quit after.
+To show any content to a public user with default layout and quit after.
 ````
     $renderMessage = new \renderMessage\messageHelper();
-    $renderMessage->render($message);
+    $renderMessage->render($content);
 ````
 
 ### renderAlert
