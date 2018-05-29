@@ -4,8 +4,8 @@ jQuery(function($) {
             $(renderFlasMessage.message).prependTo('#outerframeContainer');
             return;
         }
-        if($('#dynamicReloadContainer').length) {
-            $(renderFlasMessage.message).prependTo('#dynamicReloadContainer');
+        if($('.container-fluid').length==1) {
+            $(renderFlasMessage.message).prependTo('.container-fluid');
             return;
         }
         if($('article').length==1) {

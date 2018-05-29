@@ -55,7 +55,9 @@ This plugin already use this event to add and use `subviews/content/alert.twig`,
 
 ## Installation
 
-See [Install and activate a plugin for LimeSurvey](http://extensions.sondages.pro/install-and-activate-a-plugin-for-limesurvey.html)
+See [Install and activate a plugin for LimeSurvey](http://extensions.sondages.pro/install-and-activate-a-plugin-for-limesurvey.html) .
+
+After update of this plugin, best is to reset assets globally. You can do it via _Global settings_ with _Clear assets cache_ button.
 
 ### Via GIT
 - Go to your LimeSurvey Directory
