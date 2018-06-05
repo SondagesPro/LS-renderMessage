@@ -91,6 +91,7 @@ class messageHelper{
         $renderData['language']=$this->sLanguage;
         $renderData['templateDir']=$templateDir;
         $renderData['useCompletedTemplate']=$this->useCompletedTemplate;
+        $renderData['controller']=Yii::app()->getController()->getId();
         Yii::app()->controller->render("renderMessage.views.2_06.public",$renderData);
         Yii::app()->end();
         break;
