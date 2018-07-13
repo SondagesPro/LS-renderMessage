@@ -5,7 +5,7 @@
  * @author Denis Chenu <denis@sondages.pro>
  * @copyright 2017-2018 Denis Chenu <http://www.sondages.pro>
  * @license AGPL v3
- * @version 1.0.1
+ * @version 1.1.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,6 @@ class renderMessage extends PluginBase {
 
     public function init()
     {
-        if(intval(App()->getConfig('versionnumber')) < 3) {
-            return;
-        }
         $oPlugin = Plugin::model()->find("name = :name",array("name"=>get_class($this)));
         if($oPlugin && $oPlugin->active) {
           $this->_setConfig();
@@ -59,13 +56,14 @@ class renderMessage extends PluginBase {
     */
     public function _setConfig()
     {
-        Yii::setPathOfAlias('renderMessage', dirname(__FILE__));
-        $lsVersionNumber = Yii::app()->getConfig('versionnumber');
-        $alsVersionNumber = array_replace(array(0,0,0), explode(".",$lsVersionNumber));
-        if($alsVersionNumber[0]>=3 && $alsVersionNumber[1]>=10) { /* @see https://github.com/LimeSurvey/LimeSurvey/pull/1078 */
+        if(version_compare(Yii::app()->getConfig('versionnumber'),"3","<=")) {
+            Yii::setPathOfAlias('renderMessage', dirname(__FILE__).DIRECTORY_SEPARATOR."legacy");
             return;
         }
-
+        Yii::setPathOfAlias('renderMessage', dirname(__FILE__));
+        if(version_compare(Yii::app()->getConfig('versionnumber'),"3.10",">=") ) { /* @see https://github.com/LimeSurvey/LimeSurvey/pull/1078 */
+            return;
+        }
         $lsConfig = require(APPPATH . 'config/internal' . EXT);
         $twigRenderer = $lsConfig['components']['twigRenderer'];
         Yii::import('renderMessage.renderMessageETwigViewRenderer',true);
