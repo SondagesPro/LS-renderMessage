@@ -127,20 +127,58 @@ class messageHelper{
         $renderMessage->render($content);
     }
 
+    /**
+     * Render a message inside an alert box
+     * @param string $message
+     * @param string $type
+     * @param string $class extra class
+     * @return void
+     */
+    public static function renderAlert($message,$type='info',$class='')
+    {
+        switch(self::rmLsApiVersion()){
+            case '2_06':
+                switch ($type) {
+                    case 'info':
+                    case 'success':
+                        $class="ui-widget-content ui-corner-all";
+                        break;
+                    case 'warning':
+                        $class="ui-state-highlight ui-corner-all";
+                        break;
+                    case 'danger':
+                    case 'warning':
+                        $class="ui-state-error ui-corner-all";
+                        break;
+                }
+                $content=Yii::app()->controller->renderPartial("renderMessage.views.2_06.alert",array('class' => $class,'message' =>$message),1);
+                $renderMessage = new self;
+                $renderMessage->render($content);
+                break;
+            case '2_50':
+            default:
+                if(!empty($class)) {
+                    $type .= " ".$class;
+                }
+                $content=Yii::app()->controller->renderPartial("renderMessage.views.2_50.alert",array('type' => $type,'message' =>$message),1);
+                $renderMessage = new self;
+                $renderMessage->render($content);
+        }
+    }
+
   /**
    * return ls api version needed for helper
    * @return string (0.0|2.6|2.50|3.0)
    **/
   public static function rmLsApiVersion(){
       $lsVersion=App()->getConfig("versionnumber");
-      $aVersion=explode(".",$lsVersion);
-      $aVersion=array_replace([0,0,0],$aVersion);
-      if($aVersion[0]==2 && $aVersion[1]<=6){
+      if(version_compare($lsVersion,'2.50',"<")) {
         return "2_06";
-      }elseif($aVersion[0]==2){
+      }
+      if(version_compare($lsVersion,'2.50',">=") && version_compare($lsVersion,'3',"<" ) ) {
         return "2_50";
       }
-      Yii::log("Unknow API version : $lsVersion",'error','application.plugins.renderMessage');
+      Yii::log("Invalid API version : $lsVersion",'error','application.plugins.renderMessage');
       return "0_0";
   }
 }
