@@ -8,7 +8,7 @@ A plugin for other plugin, allowing to render a public page or send a warning to
 This plugin offer 2 functions for other plugin, after activation : render and flashMessage.
 Plugin are tested on LimeSurvey 3.8, and must work partially on version up to 3.0.
 
-**This plugin is not compatible with LimeSurvey 2.73 and lesser version.**
+This plugin is compatible with LimeSurvey 2.73 version, but some function need update.
 
 ### render
 - string $message : message send to twig file
@@ -16,11 +16,17 @@ Plugin are tested on LimeSurvey 3.8, and must work partially on version up to 3.
 - string|null $content to be used (layout dependent : in /subviews/content/ for layout 'global', default to included view content.twig) 
 - array $aData to be merged from default data
 
-To show any content to a public user with default layout and quit after.
+To show any content to a public user with default layout of current survey and defaut title (survey name or sitename).
+````
+    \renderMessage\messageHelper::renderContent($content);
+````
+
+To show any content to a public user with layout, title and data.
 ````
     $renderMessage = new \renderMessage\messageHelper();
-    $renderMessage->render($content);
+    $renderMessage->render($content,$layout,$content,$aData);
 ````
+**Warning** : there are difference in render function with LimeSurvey 2.XX version.
 
 ### renderAlert
 - string $message : the html message t be shown to user, language and template are automatically set by actual situation.
@@ -41,17 +47,9 @@ To show one or flash message to a public user.
 ````
 _This function use javascript solution_
 
-### Adding or replace template twig file.
+### Replace twig file in your survey template.
 
-This plugin add a new event : `getPluginTwigPath`, where you can add or replace twig files from template.
-
-Simple example to add a directory :
-````
-    $viewPath = dirname(__FILE__)."/views";
-    $this->getEvent()->append('add', array($viewPath));
-````
-
-This plugin already use this event to add and use `subviews/content/alert.twig`, `subviews/content/content.twig`, `subviews/messages/flash_messages.twig` and `subviews/messages/flash_message.twig`.
+This plugin add and use `subviews/content/alert.twig`, `subviews/content/content.twig`, `subviews/messages/flash_messages.twig` and `subviews/messages/flash_message.twig`.
 
 ## Installation
 
@@ -70,7 +68,7 @@ After update of this plugin, best is to reset assets globally. You can do it via
 
 ## Home page & Copyright
 - HomePage <http://extension.sondages.pro/>
-- Copyright © 2017 Denis Chenu <http://sondages.pro>
+- Copyright © 2017-2018 Denis Chenu <http://sondages.pro>
 
 Distributed under [AFFERO GNU GENERAL PUBLIC LICENSE Version 3](http://www.gnu.org/licenses/agpl.txt) licence.
 If you need a more permissive Licence [contact](http://extensions.sondages.pro/about/contact.html).

@@ -99,6 +99,17 @@ class messageHelper{
     }
 
     /**
+     * Render some content, just a shortcut in fact
+     * @param string html $content
+     * @return void
+     */
+    public static function renderContent($content)
+    {
+        $renderMessage = new self;
+        $renderMessage->render($content);
+    }
+
+    /**
      * Add a flash message to be displayed
      * @param string $message
      * @param string $type

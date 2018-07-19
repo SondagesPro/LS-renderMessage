@@ -116,6 +116,17 @@ class messageHelper{
 
   }
 
+    /**
+     * Render some content, just a shortcut in fact
+     * @param string html $content
+     * @return void
+     */
+    public static function renderContent($content)
+    {
+        $renderMessage = new self;
+        $renderMessage->render($content);
+    }
+
   /**
    * return ls api version needed for helper
    * @return string (0.0|2.6|2.50|3.0)
