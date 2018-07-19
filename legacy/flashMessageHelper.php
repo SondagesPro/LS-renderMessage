@@ -62,6 +62,7 @@ class flashMessageHelper{
 
   /**
    * render the existing public message at this time
+   * @return string
    */
   public function renderFlashMessage(){
     if(empty($this->messages)){
@@ -70,7 +71,7 @@ class flashMessageHelper{
     $lsApiVersion=\renderMessage\messageHelper::rmLsApiVersion();
     $renderData['messages']=$this->messages;
     $renderData['assetUrl']=Yii::app()->assetManager->publish(Yii::getpathOfAlias("renderMessage.assets.{$lsApiVersion}"));
-    $flasMessageHtml=Yii::app()->controller->renderPartial("renderMessage.views.{$lsApiVersion}.flashContainer",$renderData);
+    return Yii::app()->controller->renderPartial("renderMessage.views.{$lsApiVersion}.flashContainer",$renderData,1);
   }
 
 }

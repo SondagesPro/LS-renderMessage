@@ -80,9 +80,10 @@ class flashMessageHelper{
     );
     $controller = Yii::app()->getController();
     $htmlMessage = Yii::app()->twigRenderer->renderPartial('./subviews/messages/flash_messages', $renderData);
-    $renderMessageData = json_encode(['message'=>$htmlMessage]);
-    $this->_addAndRegisterPackage();
-    Yii::app()->getClientScript()->registerScript('renderMessageData',"renderFlasMessage = ".$renderMessageData,CClientScript::POS_END);
+    if(!empty($htmlMessage)) {
+        $this->_addAndRegisterPackage();
+    }
+    return $htmlMessage;
   }
 
     /**

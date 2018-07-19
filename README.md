@@ -41,11 +41,12 @@ To show an alert message to a public user and quit after.
 - string $message : message to be shown to user like a flash
 - string $type : message type, using alert class of BootStrap then `success`,`info`,`warning`,`danger`. Default is `info`.
 
-To show one or flash message to a public user.
+To add one flash message to a public user.
 ````
-    \renderMessage\messageHelper::addFlashMessage($message,$type);
+    \renderMessage\flashMessageHelper::getInstance()->addFlashMessage($message,$type);
 ````
-_This function use javascript solution_
+_Not working for 2.6lts and lesser version__
+_In 3.0 version and up : this function use javascript solution_
 
 ### Replace twig file in your survey template.
 

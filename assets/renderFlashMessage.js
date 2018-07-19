@@ -1,5 +1,5 @@
 jQuery(function($) {
-    if(renderFlasMessage && renderFlasMessage.message) {
+    if(renderFlashMessage && renderFlashMessage.message) {
         if($('#outerframeContainer').length) {
             $(renderFlasMessage.message).prependTo('#outerframeContainer');
             return;
