@@ -38,7 +38,12 @@ class renderMessage extends PluginBase {
     */
     public function beforeCloseHtml()
     {
-
+        $flashMessage = \renderMessage\flashMessageHelper::getInstance()->renderFlashMessage();
+        if(!empty($flashMessage)) {
+            $html = strval($this->getEvent()->get('html'));
+            $html .= $flashMessage;
+            $this->getEvent()->set('html',$html);
+        }
     }
 
 

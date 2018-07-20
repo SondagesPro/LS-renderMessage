@@ -71,18 +71,20 @@ class flashMessageHelper{
    * @todo
    */
   public function renderFlashMessage(){
-      return;
     if(empty($this->messages)){
         return;
     }
-    $renderData= array(
-        'renderMessage'=> array(
-            'messages'=>$this->messages,
-        ),
-    );
-    if(!empty($htmlMessage)) {
-        $this->_addAndRegisterPackage();
+    $htmlMessage = '<div class="rm-flash-container">';
+    foreach($this->messages as $aMessage) {
+        $htmlMessage .= '<div class="rm-flash-message alert alert-'.$aMessage['type'].'">';
+        $htmlMessage .= '<button type="button" class="close" data-dismiss="alert" aria-label="'.gT("Close").'">';
+        $htmlMessage .= '<span aria-hidden="true">&times;</span>';
+        $htmlMessage .= '</button>';
+        $htmlMessage .= $aMessage['message'];
+        $htmlMessage .= '</div>';
     }
+    $htmlMessage .= '</div>';
+    $this->_addAndRegisterPackage();
     return $htmlMessage;
   }
 
