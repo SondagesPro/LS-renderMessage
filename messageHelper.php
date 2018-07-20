@@ -26,13 +26,13 @@ class messageHelper{
 
     /**
     * render the error to be shown
-    * @param string $message : content twig file to be used
+    * @param string $content : content twig file to be used
     * @param string|null $layout to be used (must be in a views directory, final name start by layout_ (added here)
-    * @param string|null $content to be used (layout dependent : in /subviews/content/ for layout 'global', 
+    * @param string|null $contentview to be used (layout dependent : in /subviews/content/ for layout 'global', 
     * @param array $aData to be merged from default data
     * return @void
     */
-    public function render($message,$layout='global',$content='content',$aData=array())
+    public function render($content,$layout='global',$contentview='html',$aData=array())
     {
         if(!$layout) {
             $layout = 'global';
@@ -67,12 +67,12 @@ class messageHelper{
         }
         $renderData['aSurveyInfo']['active'] = 'Y'; // Didn't show the default warning
         $renderData['aSurveyInfo']['options']['ajaxmode'] = "off"; // Try to disable ajax mode
-        $renderData['aSurveyInfo']['include_content'] = $content;
+        $renderData['aSurveyInfo']['include_content'] = $contentview;
         $renderData['renderMessage'] = array(
-            'content' => $message,
+            'content' => $content,
         );
         $renderData = array_merge_recursive($renderData,$aData);
-        Yii::app()->twigRenderer->renderTemplateFromFile('layout_'.$layout.'.twig', $renderData, false);
+        Yii::app()->twigRenderer->renderTemplateFromFile('layout_'.$layout.'.twig', $renderData,false);
         Yii::app()->end();
     }
 

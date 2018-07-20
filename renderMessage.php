@@ -29,38 +29,16 @@ class renderMessage extends PluginBase {
           $this->_setConfig();
         }
         $this->subscribe('getPluginTwigPath');
-        $this->subscribe('beforeTwigRenderTemplate');
         $this->subscribe('beforeCloseHtml');
     }
 
     /**
-     * Add flash at end, currently done only via javascript …
-     */
-    public function beforeTwigRenderTemplate()
-    {
-        return;
-        $iSurveyId = $this->getEvent()->get('surveyId');
-        /* Add flash message */
-        $flashMessageHelper = \renderMessage\flashMessageHelper::getInstance();
-        $flashMessage = $flashMessageHelper->renderFlashMessage();
-        if(!empty($flashMessage)) {
-            $renderMessageData = json_encode(['message'=>$flashMessage]);
-            Yii::app()->getClientScript()->registerScript('renderMessageData',"renderFlashMessage = ".$renderMessageData,CClientScript::POS_END);
-        }
-    }
-
-    /**
     * Set the alias to get the file
+    * @todo
     */
     public function beforeCloseHtml()
     {
-        $renderFlasMessage = \renderMessage\flashMessageHelper::getInstance();
-        $flashMessage = $renderFlasMessage->renderFlashMessage();
-        if(!empty($flashMessage)) {
-            $html = strval($this->getEvent()->get('html'));
-            $html .= $flashMessage;
-            $this->getEvent()->set('html',$html);
-        }
+
     }
 
 

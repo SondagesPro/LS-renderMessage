@@ -68,8 +68,10 @@ class flashMessageHelper{
 
   /**
    * render the existing public message at this time
+   * @todo
    */
   public function renderFlashMessage(){
+      return;
     if(empty($this->messages)){
         return;
     }
@@ -78,8 +80,6 @@ class flashMessageHelper{
             'messages'=>$this->messages,
         ),
     );
-    $controller = Yii::app()->getController();
-    $htmlMessage = Yii::app()->twigRenderer->renderPartial('./subviews/messages/flash_messages', $renderData);
     if(!empty($htmlMessage)) {
         $this->_addAndRegisterPackage();
     }
