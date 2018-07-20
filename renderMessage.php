@@ -5,7 +5,7 @@
  * @author Denis Chenu <denis@sondages.pro>
  * @copyright 2017-2018 Denis Chenu <http://www.sondages.pro>
  * @license AGPL v3
- * @version 1.2.0
+ * @version 1.3.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,21 +29,18 @@ class renderMessage extends PluginBase {
           $this->_setConfig();
         }
         $this->subscribe('getPluginTwigPath');
-        $this->subscribe('beforeCloseHtml');
+        $this->subscribe('beforeTwigRenderTemplate');
     }
 
     /**
-    * Set the alias to get the file
-    * @todo
-    */
-    public function beforeCloseHtml()
+     * Add flash width javascript , currently done only via javascript …
+     */
+    public function beforeTwigRenderTemplate()
     {
-        $flashMessage = \renderMessage\flashMessageHelper::getInstance()->renderFlashMessage();
-        if(!empty($flashMessage)) {
-            $html = strval($this->getEvent()->get('html'));
-            $html .= $flashMessage;
-            $this->getEvent()->set('html',$html);
-        }
+        $iSurveyId = $this->getEvent()->get('surveyId');
+        /* Add flash message */
+        $flashMessageHelper = \renderMessage\flashMessageHelper::getInstance();
+        $flashMessageHelper->renderFlashMessage();
     }
 
 

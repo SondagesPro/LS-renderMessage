@@ -67,25 +67,23 @@ class flashMessageHelper{
   }
 
   /**
-   * render the existing public message at this time
-   * @todo
+   * render via js the existing public message at this time
    */
   public function renderFlashMessage(){
     if(empty($this->messages)){
         return;
     }
-    $htmlMessage = '<div class="rm-flash-container">';
-    foreach($this->messages as $aMessage) {
-        $htmlMessage .= '<div class="rm-flash-message alert alert-'.$aMessage['type'].'">';
-        $htmlMessage .= '<button type="button" class="close" data-dismiss="alert" aria-label="'.gT("Close").'">';
-        $htmlMessage .= '<span aria-hidden="true">&times;</span>';
-        $htmlMessage .= '</button>';
-        $htmlMessage .= $aMessage['message'];
-        $htmlMessage .= '</div>';
-    }
-    $htmlMessage .= '</div>';
+    $renderData= array(
+        'aSurveyInfo' => array(),
+        'renderMessage'=> array(
+            'messages'=>$this->messages,
+        ),
+    );
+    $controller = Yii::app()->getController();
+    $htmlMessage = Yii::app()->twigRenderer->renderPartial('./subviews/messages/flash_messages.twig', $renderData);
+    $renderMessageData = json_encode(['message'=>$htmlMessage]);
     $this->_addAndRegisterPackage();
-    return $htmlMessage;
+    Yii::app()->getClientScript()->registerScript('renderMessageData',"renderFlashMessage = ".$renderMessageData,CClientScript::POS_END);
   }
 
     /**
