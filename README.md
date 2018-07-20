@@ -46,7 +46,7 @@ To add one flash message to a public user.
     \renderMessage\flashMessageHelper::getInstance()->addFlashMessage($message,$type);
 ````
 _Not working for 2.6lts and lesser version__
-_In 3.0 version and up : this function use javascript solution_
+_Not working for 3.0 and upper version__
 
 ### Replace twig file in your survey template.
 

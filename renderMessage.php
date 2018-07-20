@@ -38,6 +38,7 @@ class renderMessage extends PluginBase {
      */
     public function beforeTwigRenderTemplate()
     {
+        return;
         $iSurveyId = $this->getEvent()->get('surveyId');
         /* Add flash message */
         $flashMessageHelper = \renderMessage\flashMessageHelper::getInstance();
