@@ -31,6 +31,10 @@ class messageHelper{
    */
   public $sTemplate;
   /**
+   * @var string the templateName
+   */
+  public $sLanguage;
+  /**
    * @var boolean for version lesser than 3.0 : usage of completed.pstpl
    */
   public $useCompletedTemplate=true;
@@ -38,29 +42,38 @@ class messageHelper{
   /**
    * Contructor
    */
-  public function __construct() {
-    /* Find actual survey id */
-    $this->iSurveyId=(int) Yii::app()->getConfig('surveyID');
-    if(!$this->iSurveyId){
-      $this->iSurveyId=(int)Yii::app()->request->getParam('surveyid',Yii::app()->request->getParam('sid'));
+  public function __construct($iSurveyId = null,$sTemplate = null,$sLanguage = null) {
+    $oSurvey =null;
+    if(is_null($iSurveyId )) {
+        /* Find actual survey id */
+        $this->iSurveyId=(int) Yii::app()->getConfig('surveyID');
+        if(!$this->iSurveyId){
+          $this->iSurveyId=(int)Yii::app()->request->getParam('surveyid',Yii::app()->request->getParam('sid'));
+        }
+        /* Find actual template*/
+        $oSurvey=\Survey::model()->findByPk($this->iSurveyId);
+        if(!$oSurvey) {
+            $this->iSurveyId = null;
+        }
     }
-    /* Find actual template*/
-    $oSurvey=\Survey::model()->findByPk($this->iSurveyId);
-    if($oSurvey){
-      $this->sTemplate=$oSurvey->template;
-    } else {
-      $this->sTemplate=Yii::app()->getConfig('defaulttemplate');
-      $this->iSurveyId = null;
+    if(is_null($sTemplate)) {
+        if($oSurvey){
+          $this->sTemplate=$oSurvey->template;
+        } else {
+          $this->sTemplate=Yii::app()->getConfig('defaulttemplate');
+        }
     }
-    /* Find actual language*/
-    $this->sLanguage=Yii::app()->language;
+    if(is_null($sTemplate)) {
+        $this->sLanguage=Yii::app()->language;
+    }
     if(!$this->sLanguage || Yii::app()->language=='en_US'){// @todo : control if in available language (global or survey)
-      if($oSurvey){
+      if($oSurvey && !in_array($this->sLanguage,$oSurvey->getAllLanguages()) ){
         $this->sLanguage=$oSurvey->language;
       } else {
         $this->sLanguage=Yii::app()->getConfig('defaultlang');
       }
     }
+    Yii::app()->setLanguage($this->sLanguage);
   }
   /**
    * render the error to be shown
