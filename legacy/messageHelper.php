@@ -63,15 +63,14 @@ class messageHelper{
           $this->sTemplate=Yii::app()->getConfig('defaulttemplate');
         }
     }
-    if(is_null($sTemplate)) {
+    if(is_null($sLanguage)) {
         $this->sLanguage=Yii::app()->language;
     }
-    if(!$this->sLanguage || Yii::app()->language=='en_US'){// @todo : control if in available language (global or survey)
-      if($oSurvey && !in_array($this->sLanguage,$oSurvey->getAllLanguages()) ){
-        $this->sLanguage=$oSurvey->language;
-      } else {
+    if(!$this->sLanguage || Yii::app()->language=='en_US'){
         $this->sLanguage=Yii::app()->getConfig('defaultlang');
-      }
+    }
+    if($oSurvey && !in_array($this->sLanguage,$oSurvey->getAllLanguages()) ){
+        $this->sLanguage=$oSurvey->language;
     }
     Yii::app()->setLanguage($this->sLanguage);
   }
