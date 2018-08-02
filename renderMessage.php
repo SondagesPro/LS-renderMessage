@@ -5,7 +5,7 @@
  * @author Denis Chenu <denis@sondages.pro>
  * @copyright 2017-2018 Denis Chenu <http://www.sondages.pro>
  * @license AGPL v3
- * @version 1.3.0
+ * @version 1.3.1
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,9 @@ class renderMessage extends PluginBase {
             return;
         }
         Yii::setPathOfAlias('renderMessage', dirname(__FILE__));
-        if(version_compare(Yii::app()->getConfig('versionnumber'),"3.10",">=") ) { /* @see https://github.com/LimeSurvey/LimeSurvey/pull/1078 */
+        if(version_compare(Yii::app()->getConfig('versionnumber'),"3.14.0",">=") ) {
+            /* @see https://github.com/LimeSurvey/LimeSurvey/pull/1078 */
+            /* last issue fixed https://github.com/LimeSurvey/LimeSurvey/commit/46c9f532ecc8cbb0bd5467b42128773d4de25bd3#diff-9e735704a8412da2764aa0873fb8619d  */
             return;
         }
         $lsConfig = require(APPPATH . 'config/internal' . EXT);

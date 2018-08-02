@@ -99,19 +99,20 @@ class renderMessageETwigViewRenderer extends LSETwigViewRenderer
     /**
      * @inheritdoc
      */
-    public function convertTwigToHtml($sString, $aDatas, $oTemplate)
+    public function convertTwigToHtml($sString, $aDatas, $oTemplate= null )
     {
         // Twig init
         $this->_twig = $twig = parent::getTwig();
+        if ($oTemplate !== null) {
+            // Get the additional infos for the view, such as language, direction, etc
+            $aDatas = $this->getAdditionalInfos($aDatas, $oTemplate);
 
-        // Get the additional infos for the view, such as language, direction, etc
-        $aDatas = $this->getAdditionalInfos($aDatas, $oTemplate);
+            // Add to the loader the path of the template and its parents.
+            $this->addRecursiveTemplatesPath($oTemplate);
 
-        // Add to the loader the path of the template and its parents.
-        $this->addRecursiveTemplatesPath($oTemplate);
-
-        // Plugin for blocks replacement
-        list($sString, $aDatas) = $this->getPluginsData($sString, $aDatas);
+            // Plugin for blocks replacement
+            list($sString, $aDatas) = $this->getPluginsData($sString, $aDatas);
+        }
 
         // Twig rendering
         $oTwigTemplate = $twig->createTemplate($sString);
@@ -223,6 +224,9 @@ class renderMessageETwigViewRenderer extends LSETwigViewRenderer
 
     public function renderPartial($twigView,$aData)
     {
-        return $this->_twig->loadTemplate($twigView.'.twig')->render($aData);
+        if(substr($twigView, -5) !== '.twig') {
+            $twigView .= ".twig";
+        }
+        return $this->_twig->loadTemplate($twigView)->render($aData);
     }
 }
