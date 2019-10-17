@@ -125,4 +125,5 @@ class messageHelper{
         $renderFlashMessage = \renderMessage\flashMessageHelper::getInstance();
         $renderFlashMessage->addFlashMessage($message,$type);
     }
+
 }

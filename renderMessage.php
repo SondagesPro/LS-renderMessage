@@ -3,7 +3,7 @@
  * Plugin helper for limesurvey : quick render a message to public user
  *
  * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2017-2018 Denis Chenu <http://www.sondages.pro>
+ * @copyright 2017-2019 Denis Chenu <http://www.sondages.pro>
  * @license AGPL v3
  * @version 1.3.1
  *
