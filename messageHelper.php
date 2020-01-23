@@ -3,9 +3,9 @@
  * messageHelper part of renderMessage Plugin
  *
  * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2017 Denis Chenu <http://www.sondages.pro>
+ * @copyright 2017-2020 Denis Chenu <http://www.sondages.pro>
  * @license AGPL v3
- * @version 1.0.0
+ * @version 1.0.1
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@ class messageHelper{
         if(!$layout) {
             $layout = 'global';
         }
-        Template::model()->getInstance(App()->getConfig('defaulttheme'), null);
         /* Try to find current survey */
         $iSurveyid=(int) Yii::app()->getConfig('surveyID');
         if(!$iSurveyid){
