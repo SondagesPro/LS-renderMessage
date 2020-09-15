@@ -49,6 +49,7 @@ class renderMessage extends PluginBase {
      */
     public function getPluginTwigPath()
     {
+        /* Can not register on demand, unable to know who use it */
         $viewPath = dirname(__FILE__)."/views";
         $this->getEvent()->append('add', array($viewPath));
     }
