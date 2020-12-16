@@ -37,6 +37,9 @@ class renderMessage extends PluginBase {
      */
     public function beforeTwigRenderTemplate()
     {
+        if (!$this->getEvent()) {
+            throw new CHttpException(403);
+        }
         $iSurveyId = $this->getEvent()->get('surveyId');
         /* Add flash message */
         $flashMessageHelper = \renderMessage\flashMessageHelper::getInstance();
@@ -49,6 +52,9 @@ class renderMessage extends PluginBase {
      */
     public function getPluginTwigPath()
     {
+        if (!$this->getEvent()) {
+            throw new CHttpException(403);
+        }
         /* Can not register on demand, unable to know who use it */
         $viewPath = dirname(__FILE__)."/views";
         $this->getEvent()->append('add', array($viewPath));
@@ -56,7 +62,7 @@ class renderMessage extends PluginBase {
     /**
     * Set the alias to get the file and replace twig by own Class
     */
-    public function _setConfig()
+    private function _setConfig()
     {
         if(version_compare(Yii::app()->getConfig('versionnumber'),"3","<=")) {
             Yii::setPathOfAlias('renderMessage', dirname(__FILE__).DIRECTORY_SEPARATOR."legacy");
